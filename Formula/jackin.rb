@@ -1,10 +1,10 @@
 class Jackin < Formula
   desc "CLI for orchestrating AI coding agents in Docker containers at scale"
   homepage "https://github.com/jackin-project/jackin"
-  url "https://github.com/jackin-project/jackin/archive/refs/tags/v0.5.0.tar.gz"
-  sha256 "85628d048a3099b70641b3cb713f93d5a09cb92ebdcdbd33312e1f111619b38b"
   license "Apache-2.0"
   head "https://github.com/jackin-project/jackin.git", branch: "main"
+
+  disable! date: "2026-05-09", because: "jackin has not reached a stable release yet; use the rolling preview channel"
 
   depends_on "rust" => :build
   depends_on "docker" => :optional

@@ -1,6 +1,6 @@
 # AGENTS.md — homebrew-tap
 
-Homebrew formulae for the `jackin` CLI. **This repo is public.** Every `brew install jackin` reads exactly what's in `Formula/*.rb`. Poisoning a formula is a supply-chain attack on every downstream user.
+Homebrew formulae for the `jackin` CLI. **This repo is public.** Every `brew install jackin` or `brew install jackin@preview` reads exactly what's in `Formula/*.rb`. Poisoning a formula is a supply-chain attack on every downstream user.
 
 Treat every commit here as a change to software that will run on other people's machines.
 
@@ -11,7 +11,7 @@ Unlike a secrets-rich repo, the surface here is narrow but sharp:
 1. **Formula integrity** — `url` + `sha256` together define what gets installed. If they mismatch or either is manipulated, users get arbitrary code. A mismatch is catastrophic because `brew` trusts the sha256 blindly.
 2. **Mutable ref anchoring** — formulas must pin to immutable references (tagged release archive or full commit SHA in `/archive/<sha>.tar.gz`). A URL pointing at a branch HEAD allows silent tampering upstream.
 3. **Automation hijack** — the preview formula is auto-bumped by CI in the `jackin` repo. If that automation's token leaks, attackers push poisoned previews. The blast radius covers every user on the `@preview` channel.
-4. **Upstream tag immutability** — the stable formula pins to a tag like `v0.5.0`. If tags aren't protected on `jackin`, a force-move silently changes what users install next.
+4. **Upstream tag immutability** — the stable formula pins to a tag when enabled. If tags aren't protected on `jackin`, a force-move silently changes what users install next.
 
 ## Hard rules (do not break these)
 
@@ -57,13 +57,13 @@ Expected (as of 2026-04-16, applied via `jackin-github-terraform` Terraform conf
 ]
 ```
 
-The `protect-tags` ruleset covers `~ALL` tag names with `non_fast_forward = true` and `deletion = true` — so no tag can be force-moved or deleted once created. If that ruleset ever goes missing or falls to `enforcement: disabled`, treat it as an incident: tag force-moves become a silent supply-chain risk, since every `brew install jackin@v0.5.0` trusts whatever commit the tag currently points at.
+The `protect-tags` ruleset covers `~ALL` tag names with `non_fast_forward = true` and `deletion = true` — so no tag can be force-moved or deleted once created. Keep checking it even while the stable formula is disabled; it matters again when jackin publishes its first stable release.
 
 ## Who commits here
 
 Most commits are automated (CI in `jackin` bumps `Formula/jackin-preview.rb` on every build — 400+ commits to date). Manual commits should be rare and should:
 
-- Update the stable `Formula/jackin.rb` only (preview is CI-managed)
+- Update the stable `Formula/jackin.rb` only when intentionally changing the disabled stable placeholder or publishing the first stable formula (preview is CI-managed)
 - Go through a PR even though no reviewer is required by the ruleset
 - Carry a descriptive Conventional Commits message
 
