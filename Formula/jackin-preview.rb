@@ -1,9 +1,9 @@
 class JackinPreview < Formula
   desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
   homepage "https://github.com/jackin-project/jackin"
-  url "https://github.com/jackin-project/jackin/archive/79664ae44a794d012ce0a465b7600411d7e0c694.tar.gz"
-  version "0.6.0-preview.583+79664ae"
-  sha256 "273c55923255263a93e3bde061e5c19fa12d066529585bd39cf88c642f519e04"
+  url "https://github.com/jackin-project/jackin/archive/284bba640ca7c34cbea51847cef06e6fad0907a5.tar.gz"
+  version "0.6.0-preview.584+284bba6"
+  sha256 "fee5d5cb09f4c71707179e929b2a4c780670bd698f0656daaf5584fa5e13e0a3"
   license "Apache-2.0"
 
   depends_on "rust" => :build
