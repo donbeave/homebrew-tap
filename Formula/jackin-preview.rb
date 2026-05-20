@@ -1,22 +1,29 @@
+# source-sha: 1c623d10e9f7e9072db4bd8ef027d4c24cd95ab3
 class JackinPreview < Formula
   desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
   homepage "https://github.com/jackin-project/jackin"
-  url "https://github.com/jackin-project/jackin/archive/2949980f8f220addf12222b07348458a06ab282d.tar.gz"
-  version "0.6.0-preview.707+2949980"
-  sha256 "6fa05eb7e89cf09d41fb3da1cdda4c92b12fa597fce319ce839fa85c11b0fe72"
+  version "0.6.0-preview.713+1c623d1"
   license "Apache-2.0"
 
-  depends_on "rust" => :build
-  depends_on "docker" => :optional
+  on_macos do
+    on_arm do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-preview-aarch64-apple-darwin.tar.gz"
+      sha256 "c34e780ab9b6521d313396b903347f5a1fd7be2335821a33faa39f020689e0a5"
+    end
+    on_intel do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-preview-x86_64-apple-darwin.tar.gz"
+      sha256 "54a8a633360521f3de4dae050d59f6da7413cb38e69481a53b505b82f89d2fce"
+    end
+  end
 
   conflicts_with "jackin-project/tap/jackin", because: "preview and stable install the same binary"
 
   def install
-    ENV["JACKIN_VERSION_OVERRIDE"] = version.to_s
-    system "cargo", "install", *std_cargo_args
+    bin.install "jackin"
+    bin.install "jackin-role"
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/jackin --version")
+    system "#{bin}/jackin", "--version"
   end
 end
