@@ -1,18 +1,18 @@
-# source-sha: 73f61751ebdbf7721bc59a69ac136581bac4dda8
+# source-sha: 7666a1c8a3b4434d1a5ab049df1249d9e6106a30
 class JackinPreview < Formula
   desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
   homepage "https://github.com/jackin-project/jackin"
-  version "0.6.0-preview.732+73f6175"
+  version "0.6.0-preview.734+7666a1c"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-preview-aarch64-apple-darwin.tar.gz"
-      sha256 "878f08a1f4668b2b4e95d704fd6ee921b8300f4699e82d1ef4dbd271d36e32ac"
+      sha256 "d8f3fc48c32903f42d2c8debdcd384d29857a53e78ed08c590cf94f0701fb6ed"
     end
     on_intel do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-preview-x86_64-apple-darwin.tar.gz"
-      sha256 "a986447fc55f37d7569af26fd92c76731a43b7851307ee7feb9b6fac37830430"
+      sha256 "c2080a5895724e3f843917cc243ce2dcc3c705a06e035ff5b97ce4137afae77d"
     end
   end
 
