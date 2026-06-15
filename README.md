@@ -8,10 +8,13 @@ jackin is experimental preview software. It has not reached a stable release yet
 
 ```sh
 brew tap jackin-project/tap
+brew trust jackin-project/tap
 brew install jackin@preview
 ```
 
 The stable `jackin` formula is intentionally disabled until the first stable release.
+
+Homebrew can refuse to load formulae from taps that have not been trusted. Run `brew trust jackin-project/tap` once after tapping this repository.
 
 ## Updating
 
