@@ -1,29 +1,29 @@
-# source-sha: b01e315ea93315daf22ab2fe45fadd428064ddb0
+# source-sha: c0ae269d48e542ca59a5414adffd91a466daf860
 class JackinDev < Formula
   desc "Developer tooling for local jackin pull request verification"
   homepage "https://github.com/jackin-project/jackin"
-  version "0.1.2"
+  version "0.1.3"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.2/jackin-dev-0.1.2-aarch64-apple-darwin.tar.gz"
-      sha256 "e2a8e5f3662a729f1c34980d89d3338f1f8f8b7a355805d3947e12964e001c07"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-aarch64-apple-darwin.tar.gz"
+      sha256 "e7403fb4c2ed5617ea7983ae1b0233f7433a577c9c47a117c5373b267adc3486"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.2/jackin-dev-0.1.2-x86_64-apple-darwin.tar.gz"
-      sha256 "d9df2532331ffc59eb8a79c78a2bdf47ed236c1149f167d7e960817b617b6710"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-x86_64-apple-darwin.tar.gz"
+      sha256 "d42489ed798cde683754e70caa90a7af46441f3067ce4bab7c43b6c2464109a1"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.2/jackin-dev-0.1.2-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "9426db9700ccd61e9b449d66aaafbbc8786f725d64ea293685aea9e8f9515272"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "a93bc74d4bbdfb95ec19f95bcb4321ff35a2049fcd312b83eee4d64e2d21bdd0"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.2/jackin-dev-0.1.2-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "d533d4571d8659aa5b81e8e36b28ecd8ba17a40c7226272d7aa04c2c5529a82f"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "da8e775cf4bc83516bb91e9cb5b78dd1224a7b00e09fcd356d4fa498ba4ad370"
     end
   end
 
