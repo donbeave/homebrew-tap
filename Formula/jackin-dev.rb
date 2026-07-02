@@ -1,29 +1,28 @@
-# source-sha: c0ae269d48e542ca59a5414adffd91a466daf860
 class JackinDev < Formula
   desc "Developer tooling for local jackin pull request verification"
   homepage "https://github.com/jackin-project/jackin"
-  version "0.1.3"
+  version "0.1.13"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-aarch64-apple-darwin.tar.gz"
-      sha256 "e7403fb4c2ed5617ea7983ae1b0233f7433a577c9c47a117c5373b267adc3486"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.13/jackin-dev-0.1.13-aarch64-apple-darwin.tar.gz"
+      sha256 "a074df0bcc33931ad0d62dbc60dcdb0e6a264e0cfb7ed33d871ef8ef630a698e"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-x86_64-apple-darwin.tar.gz"
-      sha256 "d42489ed798cde683754e70caa90a7af46441f3067ce4bab7c43b6c2464109a1"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.13/jackin-dev-0.1.13-x86_64-apple-darwin.tar.gz"
+      sha256 "84effca2aa3250195581085e2fb1f0ae0679304fc10cca4fcff0f63b11e67f10"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "a93bc74d4bbdfb95ec19f95bcb4321ff35a2049fcd312b83eee4d64e2d21bdd0"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.13/jackin-dev-0.1.13-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "bf7fceb32bd081fd34ee531d365b28e98c88ab13406ac4272c282ba505957dcb"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.3/jackin-dev-0.1.3-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "da8e775cf4bc83516bb91e9cb5b78dd1224a7b00e09fcd356d4fa498ba4ad370"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.13/jackin-dev-0.1.13-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "e8a00f2e0a9e9d0180ec2d19f1432d2972c39641c0afd695227a76c9c2066fc0"
     end
   end
 
