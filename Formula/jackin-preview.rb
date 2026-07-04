@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Alexey Zhokhov
+# SPDX-License-Identifier: Apache-2.0
+
 # source-sha: 73848d8568f3894ea12d8bb632e4e92d8d02dfca
 class JackinPreview < Formula
   desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
