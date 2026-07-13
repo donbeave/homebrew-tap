@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Alexey Zhokhov
+# SPDX-License-Identifier: Apache-2.0
+
 class JackinDev < Formula
   desc "Developer tooling for local jackin pull request verification"
   homepage "https://github.com/jackin-project/jackin"

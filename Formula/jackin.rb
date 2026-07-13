@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Alexey Zhokhov
+# SPDX-License-Identifier: Apache-2.0
+
 class Jackin < Formula
   desc "CLI for orchestrating AI coding agents in Docker containers at scale"
   homepage "https://github.com/jackin-project/jackin"
