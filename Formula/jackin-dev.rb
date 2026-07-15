@@ -1,28 +1,28 @@
 class JackinDev < Formula
   desc "Developer tooling for local jackin pull request verification"
   homepage "https://github.com/jackin-project/jackin"
-  version "0.1.24"
+  version "0.1.25"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.24/jackin-dev-0.1.24-aarch64-apple-darwin.tar.gz"
-      sha256 "670548917221a43e9cc89827342c9e8e6bb467ab4d8419e26e368d100a0471f4"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.25/jackin-dev-0.1.25-aarch64-apple-darwin.tar.gz"
+      sha256 "b21c500a655c1707abb9e93c91291b8249ee6c4fc949fe9cb9daa24c55c531cb"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.24/jackin-dev-0.1.24-x86_64-apple-darwin.tar.gz"
-      sha256 "806f2a0b228ad76087222f1af9b5860de26d1218dd80718655e91e35a447f997"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.25/jackin-dev-0.1.25-x86_64-apple-darwin.tar.gz"
+      sha256 "19e453ea1ab0e258cb811ad459df2c64b2b0b4e6bb169085fb1a5ea0176a9dfa"
     end
   end
 
   on_linux do
     on_arm do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.24/jackin-dev-0.1.24-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "1327d3d9a07d859ab90c63eb70a13170a5444166bd70a7b22c024f4c97401d60"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.25/jackin-dev-0.1.25-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "35fcc6da57047eba3e1a280885c6ac1b4a9915c65f8759a83d25ce7d7646eb9d"
     end
     on_intel do
-      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.24/jackin-dev-0.1.24-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "1578187af6e8eb1cd64de00d40448d6cefe1e8ebdc188968f32912f5c422dc2a"
+      url "https://github.com/jackin-project/jackin/releases/download/jackin-dev-v0.1.25/jackin-dev-0.1.25-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "a6d55400287b714d047f9725e3d4f0b35697816c747933abbf799d21cff7c9d6"
     end
   end
 
