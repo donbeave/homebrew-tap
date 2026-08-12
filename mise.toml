@@ -2,6 +2,20 @@
 # SPDX-License-Identifier: Apache-2.0
 
 [tools]
+actionlint = "1.7.12"
+jq = "1.8.2"
 python = "3.14"
 uv = "0.11.29"
 "pipx:reuse" = { version = "6.2.0", extras = "charset-normalizer", depends = ["python"] }
+
+[tasks.actionlint]
+run = "actionlint"
+
+[tasks.package-update]
+run = "./scripts/package-update.sh"
+
+[tasks.package-update-test]
+run = "./scripts/test-package-update.sh"
+
+[tasks.check]
+depends = ["actionlint", "package-update-test"]
