@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+verified=${VELNOR_VERIFIED_PACKAGE_DIR:?missing VELNOR_VERIFIED_PACKAGE_DIR}
+manifest="$verified/release-manifest.json"
+identity="$verified/identity.json"
+
+jq -e '
+  keys == ["manifest","source_digest","source_ref","source_repository"] and
+  .source_repository == "jackin-project/jackin" and
+  (.source_ref | test("^refs/tags/v[0-9]+[.][0-9]+[.][0-9]+$")) and
+  (.source_digest | test("^[0-9a-f]{40}$"))
+' "$identity" >/dev/null
+
+version=$(jq -er '.version | select(test("^[0-9]+[.][0-9]+[.][0-9]+$"))' "$manifest")
+tag="v$version"
+jq -e --arg ref "refs/tags/$tag" '
+  keys == ["assets","schema","source_commit","source_ref","source_repository","version"] and
+  .schema == "velnor.package-release.v1" and
+  .source_repository == "jackin-project/jackin" and
+  .source_ref == $ref and
+  (.source_commit | test("^[0-9a-f]{40}$")) and
+  ([.assets[].name] | length) == 7 and
+  ([.assets[].name] | unique | length) == 7
+' "$manifest" >/dev/null
+
+asset() {
+  local name=$1
+  test -f "$verified/$name"
+  jq -er --arg name "$name" '
+    [.assets[] | select(.name == $name)]
+    | select(length == 1)
+    | .[0].sha256
+    | select(test("^[0-9a-f]{64}$"))
+  ' "$manifest"
+}
+
+mac_arm=$(asset "jackin-${version}-aarch64-apple-darwin.tar.gz")
+mac_intel=$(asset "jackin-${version}-x86_64-apple-darwin.tar.gz")
+linux_arm=$(asset "jackin-${version}-aarch64-unknown-linux-gnu.tar.gz")
+linux_intel=$(asset "jackin-${version}-x86_64-unknown-linux-gnu.tar.gz")
+capsule_arm=$(asset "jackin-capsule-${version}-aarch64-unknown-linux-gnu.tar.gz")
+capsule_intel=$(asset "jackin-capsule-${version}-x86_64-unknown-linux-gnu.tar.gz")
+desktop_arm=$(asset "jackin-desktop-${version}-aarch64-apple-darwin.zip")
+source_commit=$(jq -er '.source_commit' "$manifest")
+test "$(jq -r '.source_digest' "$identity")" = "$source_commit"
+
+cat > Formula/jackin.rb <<EOF
+# SPDX-FileCopyrightText: 2026 Alexey Zhokhov
+# SPDX-License-Identifier: Apache-2.0
+# source-sha: $source_commit
+class Jackin < Formula
+  desc "CLI for orchestrating autonomous AI coding agents"
+  homepage "https://github.com/jackin-project/jackin"
+  version "$version"
+  license "Apache-2.0"
+
+  on_macos do
+    on_arm do
+      url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-$version-aarch64-apple-darwin.tar.gz"
+      sha256 "$mac_arm"
+    end
+    on_intel do
+      url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-$version-x86_64-apple-darwin.tar.gz"
+      sha256 "$mac_intel"
+    end
+  end
+
+  on_linux do
+    on_arm do
+      url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-$version-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "$linux_arm"
+    end
+    on_intel do
+      url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-$version-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "$linux_intel"
+    end
+  end
+
+  resource "jackin-capsule-aarch64-unknown-linux-gnu" do
+    url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-capsule-$version-aarch64-unknown-linux-gnu.tar.gz"
+    sha256 "$capsule_arm"
+  end
+
+  resource "jackin-capsule-x86_64-unknown-linux-gnu" do
+    url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-capsule-$version-x86_64-unknown-linux-gnu.tar.gz"
+    sha256 "$capsule_intel"
+  end
+
+  conflicts_with "jackin-project/tap/jackin-preview", because: "stable and preview install the same binary"
+
+  def install
+    bin.install "jackin"
+    bin.install "jackin-role"
+    capsule_target = Hardware::CPU.arm? ? "aarch64-unknown-linux-gnu" : "x86_64-unknown-linux-gnu"
+    capsule_arch = Hardware::CPU.arm? ? "arm64" : "amd64"
+    resource("jackin-capsule-#{capsule_target}").stage do
+      capsule_dir = libexec/"jackin-capsule/linux-#{capsule_arch}"
+      capsule_dir.install "jackin-capsule"
+      chmod 0755, capsule_dir/"jackin-capsule"
+    end
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/jackin --version")
+  end
+end
+EOF
+
+mkdir -p Casks
+cat > Casks/jackin-desktop.rb <<EOF
+# SPDX-FileCopyrightText: 2026 Alexey Zhokhov
+# SPDX-License-Identifier: Apache-2.0
+# source-sha: $source_commit
+cask "jackin-desktop" do
+  version "$version"
+  sha256 "$desktop_arm"
+
+  url "https://github.com/jackin-project/jackin/releases/download/$tag/jackin-desktop-$version-aarch64-apple-darwin.zip"
+  name "Jackin Desktop"
+  desc "Native macOS surfaces for Jackin"
+  homepage "https://github.com/jackin-project/jackin"
+
+  depends_on arch: :arm64
+  app "Jackin Desktop.app"
+end
+EOF
