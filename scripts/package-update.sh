@@ -4,6 +4,126 @@ set -euo pipefail
 verified=${VELNOR_VERIFIED_PACKAGE_DIR:?missing VELNOR_VERIFIED_PACKAGE_DIR}
 manifest="$verified/release-manifest.json"
 identity="$verified/identity.json"
+channel=${VELNOR_PACKAGE_CHANNEL:-stable}
+
+if test "$channel" = preview; then
+  jq -e '
+    keys == ["manifest","source_digest","source_ref","source_repository"] and
+    .source_repository == "jackin-project/jackin" and
+    .source_ref == "refs/heads/main" and
+    (.source_digest | test("^[0-9a-f]{40}$"))
+  ' "$identity" >/dev/null
+
+  version=$(jq -er '.version | select(test("^[0-9]+[.][0-9]+[.][0-9]+-preview[.][0-9]+[+][0-9a-f]{7}$"))' "$manifest")
+  source_commit=$(jq -er '.source_commit' "$manifest")
+  test "$(jq -r '.source_digest' "$identity")" = "$source_commit"
+  test "${version##*+}" = "${source_commit:0:7}"
+  jq -e --arg commit "$source_commit" --arg version "$version" '
+    keys == ["assets","schema","source_commit","source_ref","source_repository","version"] and
+    .schema == "velnor.package-release.v1" and
+    .source_repository == "jackin-project/jackin" and
+    .source_ref == "refs/heads/main" and
+    .source_commit == $commit and .version == $version and
+    ([.assets[].name] | sort) == ([
+      "jackin-aarch64-apple-darwin.tar.gz",
+      "jackin-aarch64-unknown-linux-gnu.tar.gz",
+      "jackin-capsule-aarch64-unknown-linux-gnu.tar.gz",
+      "jackin-capsule-x86_64-unknown-linux-gnu.tar.gz",
+      "jackin-x86_64-apple-darwin.tar.gz",
+      "jackin-x86_64-unknown-linux-gnu.tar.gz"
+    ] | sort) and
+    ([.assets[].name] | unique | length) == 6
+  ' "$manifest" >/dev/null
+
+  asset() {
+    local name=$1
+    test -f "$verified/$name"
+    local digest
+    digest=$(jq -er --arg name "$name" '
+      [.assets[] | select(.name == $name)]
+      | select(length == 1)
+      | .[0].sha256
+      | select(test("^[0-9a-f]{64}$"))
+    ' "$manifest")
+    test "$(sha256sum "$verified/$name" | cut -d' ' -f1)" = "$digest"
+    printf '%s\n' "$digest"
+  }
+
+  mac_arm=$(asset jackin-aarch64-apple-darwin.tar.gz)
+  mac_intel=$(asset jackin-x86_64-apple-darwin.tar.gz)
+  linux_arm=$(asset jackin-aarch64-unknown-linux-gnu.tar.gz)
+  linux_intel=$(asset jackin-x86_64-unknown-linux-gnu.tar.gz)
+  capsule_arm=$(asset jackin-capsule-aarch64-unknown-linux-gnu.tar.gz)
+  capsule_intel=$(asset jackin-capsule-x86_64-unknown-linux-gnu.tar.gz)
+
+  binary_dir=$(mktemp -d)
+  trap 'rm -rf "$binary_dir"' EXIT
+  tar -xzf "$verified/jackin-x86_64-unknown-linux-gnu.tar.gz" -C "$binary_dir"
+  test "$("$binary_dir/jackin" --version)" = "jackin $version"
+
+  cat > Formula/jackin-preview.rb <<EOF
+# source-sha: $source_commit
+class JackinPreview < Formula
+  desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
+  homepage "https://github.com/jackin-project/jackin"
+  version "$version"
+  license "Apache-2.0"
+
+  on_macos do
+    on_arm do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-aarch64-apple-darwin.tar.gz"
+      sha256 "$mac_arm"
+    end
+    on_intel do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-x86_64-apple-darwin.tar.gz"
+      sha256 "$mac_intel"
+    end
+  end
+
+  on_linux do
+    on_arm do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-aarch64-unknown-linux-gnu.tar.gz"
+      sha256 "$linux_arm"
+    end
+    on_intel do
+      url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-x86_64-unknown-linux-gnu.tar.gz"
+      sha256 "$linux_intel"
+    end
+  end
+
+  resource "jackin-capsule-aarch64-unknown-linux-gnu" do
+    url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-capsule-aarch64-unknown-linux-gnu.tar.gz"
+    sha256 "$capsule_arm"
+  end
+
+  resource "jackin-capsule-x86_64-unknown-linux-gnu" do
+    url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-capsule-x86_64-unknown-linux-gnu.tar.gz"
+    sha256 "$capsule_intel"
+  end
+
+  conflicts_with "jackin-project/tap/jackin", because: "preview and stable install the same binary"
+
+  def install
+    bin.install "jackin"
+    bin.install "jackin-role"
+    capsule_target = Hardware::CPU.arm? ? "aarch64-unknown-linux-gnu" : "x86_64-unknown-linux-gnu"
+    capsule_arch = Hardware::CPU.arm? ? "arm64" : "amd64"
+    resource("jackin-capsule-#{capsule_target}").stage do
+      capsule_dir = libexec/"jackin-capsule/linux-#{capsule_arch}"
+      capsule_dir.install "jackin-capsule"
+      chmod 0755, capsule_dir/"jackin-capsule"
+    end
+  end
+
+  test do
+    assert_match version.to_s, shell_output("#{bin}/jackin --version")
+  end
+end
+EOF
+  exit 0
+fi
+
+test "$channel" = stable
 
 jq -e '
   keys == ["manifest","source_digest","source_ref","source_repository"] and

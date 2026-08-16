@@ -42,6 +42,58 @@ jq -Sn --arg source_repository jackin-project/jackin --arg source_ref refs/tags/
   test "$(grep -h -c 'sha256 "[0-9a-f]\{64\}"' Formula/jackin.rb Casks/jackin-desktop.rb | awk '{n+=$1} END{print n}')" -eq 7
 )
 
+preview_verified="$tmp/preview-verified"
+mkdir "$preview_verified"
+preview_version=1.2.3-preview.42+0123456
+preview_names=(
+  jackin-aarch64-apple-darwin.tar.gz
+  jackin-x86_64-apple-darwin.tar.gz
+  jackin-aarch64-unknown-linux-gnu.tar.gz
+  jackin-x86_64-unknown-linux-gnu.tar.gz
+  jackin-capsule-aarch64-unknown-linux-gnu.tar.gz
+  jackin-capsule-x86_64-unknown-linux-gnu.tar.gz
+)
+mkdir "$tmp/preview-binary"
+cat > "$tmp/preview-binary/jackin" <<EOF
+#!/usr/bin/env bash
+echo 'jackin $preview_version'
+EOF
+chmod 0755 "$tmp/preview-binary/jackin"
+: > "$tmp/preview-assets.jsonl"
+for name in "${preview_names[@]}"; do
+  if test "$name" = jackin-x86_64-unknown-linux-gnu.tar.gz; then
+    tar -czf "$preview_verified/$name" -C "$tmp/preview-binary" jackin
+  else
+    printf 'fixture-%s\n' "$name" > "$preview_verified/$name"
+  fi
+  digest=$(shasum -a 256 "$preview_verified/$name" | awk '{print $1}')
+  jq -cn --arg name "$name" --arg sha256 "$digest" '{name:$name,sha256:$sha256}' >> "$tmp/preview-assets.jsonl"
+done
+jq -Sn --arg source_repository jackin-project/jackin --arg source_ref refs/heads/main \
+  --arg source_commit "$commit" --arg version "$preview_version" --slurpfile assets "$tmp/preview-assets.jsonl" \
+  '{schema:"velnor.package-release.v1",source_repository:$source_repository,source_ref:$source_ref,source_commit:$source_commit,version:$version,assets:$assets}' \
+  > "$preview_verified/release-manifest.json"
+jq -Sn --arg source_repository jackin-project/jackin --arg source_ref refs/heads/main \
+  --arg source_digest "$commit" --slurpfile manifest "$preview_verified/release-manifest.json" \
+  '{source_repository:$source_repository,source_ref:$source_ref,source_digest:$source_digest,manifest:$manifest[0]}' \
+  > "$preview_verified/identity.json"
+
+(
+  cd "$tmp/repo"
+  VELNOR_PACKAGE_CHANNEL=preview VELNOR_VERIFIED_PACKAGE_DIR="$preview_verified" ./scripts/package-update.sh
+  grep -Fx "# source-sha: $commit" Formula/jackin-preview.rb
+  grep -F "version \"$preview_version\"" Formula/jackin-preview.rb
+  test "$(grep -cE 'sha256 \"[0-9a-f]{64}\"$' Formula/jackin-preview.rb)" -eq 6
+  ! grep -Eq 'sha256 \"[0-9a-f]{64}  ' Formula/jackin-preview.rb
+)
+
+jq '.version = "1.2.3-preview.43+0123456"' "$preview_verified/release-manifest.json" > "$tmp/bad-preview.json"
+mv "$tmp/bad-preview.json" "$preview_verified/release-manifest.json"
+if (cd "$tmp/repo" && VELNOR_PACKAGE_CHANNEL=preview VELNOR_VERIFIED_PACKAGE_DIR="$preview_verified" ./scripts/package-update.sh); then
+  echo "preview binary/version mismatch was accepted" >&2
+  exit 1
+fi
+
 jq '.assets |= .[0:6]' "$verified/release-manifest.json" > "$tmp/bad.json"
 mv "$tmp/bad.json" "$verified/release-manifest.json"
 if (cd "$tmp/repo" && VELNOR_VERIFIED_PACKAGE_DIR="$verified" ./scripts/package-update.sh); then
