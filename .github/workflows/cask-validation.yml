@@ -14,10 +14,15 @@ on:
       - "REUSE.toml"
   workflow_dispatch:
     inputs:
+      lanes:
+        description: velnor (default) | github | both
+        type: choice
+        default: velnor
+        options: [velnor, github, both]
       cask_path:
-        description: "Cask file path relative to repo root"
-        required: true
-        default: "Casks/jackin-usage-menu-bar.rb"
+        description: "Cask file path relative to repo root (empty: all Casks/*.rb)"
+        required: false
+        default: ""
         type: string
 
 permissions:
@@ -29,8 +34,17 @@ concurrency:
 
 jobs:
   cask-validate:
-    name: Cask validation
-    runs-on: macos-latest
+    # The deep native checks (codesign, spctl, stapler, lipo, PlistBuddy,
+    # /Applications install) fundamentally require macOS. No macOS-capable
+    # Velnor label exists in the org fleet, so the macOS lane stays on
+    # GitHub-hosted runners as the non-default dispatch escape hatch only.
+    # The default lane is Velnor; identical steps run on both lanes.
+    name: Cask validation (${{ matrix.config.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config: ${{ fromJSON((github.event_name == 'workflow_dispatch' && inputs.lanes == 'both') && '[{"lane":"Velnor","runner":["self-hosted","velnor-target-mvp"],"writer":true},{"lane":"GitHub","runner":"macos-latest","writer":false}]' || (github.event_name == 'workflow_dispatch' && inputs.lanes == 'github') && '[{"lane":"GitHub","runner":"macos-latest","writer":true}]' || '[{"lane":"Velnor","runner":["self-hosted","velnor-target-mvp"],"writer":true}]') }}
+    runs-on: ${{ matrix.config.runner }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -48,12 +62,20 @@ jobs:
           set -euo pipefail
           candidates=()
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            path="${DISPATCH_CASK:-Casks/jackin-usage-menu-bar.rb}"
-            if [ ! -f "$path" ]; then
-              echo "::error::cask path does not exist: $path"
-              exit 1
+            if [ -n "${DISPATCH_CASK}" ]; then
+              path="$DISPATCH_CASK"
+              if [ ! -f "$path" ]; then
+                echo "::error::cask path does not exist: $path"
+                exit 1
+              fi
+              candidates+=("$path")
+            else
+              # No explicit path: validate every cask in the tap.
+              shopt -s nullglob
+              for f in Casks/*.rb; do
+                candidates+=("$f")
+              done
             fi
-            candidates+=("$path")
           else
             # PR: discover changed Casks/*.rb (null-safe).
             while IFS= read -r -d '' f; do
