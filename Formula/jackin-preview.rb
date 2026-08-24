@@ -1,40 +1,40 @@
-# source-sha: f057364b8a83968b43f7d0f8e5f669eb9c34b8cf
+# source-sha: 1e53deadd8cbeb113e2d5ab3b48ecd49c51b9f32
 class JackinPreview < Formula
   desc "CLI for orchestrating autonomous AI coding agents in isolated sandboxed environments — reproducible, scoped, and fully under your control"
   homepage "https://github.com/jackin-project/jackin"
-  version "0.6.4-preview.1132+f057364"
+  version "0.6.4-preview.1136+1e53dea"
   license "Apache-2.0"
 
   on_macos do
     on_arm do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-aarch64-apple-darwin.tar.gz"
-      sha256 "f2142fdd4420eb81146c52c63404c14568123e4056bb66dea194ef3aad38a829"
+      sha256 "faab1d65baeb01ca5221caf20fb04f171b6d1950d5331696ae588b65eb5f28c4"
     end
     on_intel do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-x86_64-apple-darwin.tar.gz"
-      sha256 "812da3a2f1c89b59530f96e2ca0d2a2baab18747ae7c912c9e43e1339b9eead2"
+      sha256 "b684e1fd61a5c5152db66eb069a70b0d3370864aa5b52f9fd7ded3b41203b0e8"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-aarch64-unknown-linux-gnu.tar.gz"
-      sha256 "6e05ccbea7985a9fa2300def01ed6e2abbee359671f1888ed5a3ce1a39b4973f"
+      sha256 "ff5a0ce35184aef15cee2941820e508afffb4f1fc897b40f230eacb5ce2447e4"
     end
     on_intel do
       url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-x86_64-unknown-linux-gnu.tar.gz"
-      sha256 "ee71fd098129503b411e0f555eeaf97bc3e70809aea0d2aacfd5c7b518050259"
+      sha256 "fa1d9c7dc1938302acbbbfcd11869331da21a3c540b00b482a98ccbb493151e9"
     end
   end
 
   resource "jackin-capsule-aarch64-unknown-linux-gnu" do
     url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-capsule-aarch64-unknown-linux-gnu.tar.gz"
-    sha256 "8ad1dbe2b4d068560f55887f5b6543fd2a1e33efef30ce23d61199e00e4ebfef"
+    sha256 "240a7020b0eaef64152729ffc7159291e37b01db81b8b6753a194c4eb804501e"
   end
 
   resource "jackin-capsule-x86_64-unknown-linux-gnu" do
     url "https://github.com/jackin-project/jackin/releases/download/preview/jackin-capsule-x86_64-unknown-linux-gnu.tar.gz"
-    sha256 "148c58d5cf9e637593225015f7f2d074299e85528739ccd8eeaa59e4b730a230"
+    sha256 "a31fe29cf848ca85ec4f16563b83de4df16db79cb289a2416067d54c32636be3"
   end
 
   conflicts_with "jackin-project/tap/jackin", because: "preview and stable install the same binary"
