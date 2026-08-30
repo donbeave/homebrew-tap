@@ -32,10 +32,10 @@ jobs:
     with:
       consumer-repository: ${{ github.repository }}
       channel: ${{ matrix.channel }}
-      current-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
-      old-signer-digest: ""
-      old-signer-activated-at: ""
-      old-signer-expires-at: ""
+      current-signer-digest: "eeb8a182174f3c97c370ecf3f1e3e4689ae22cfe"
+      old-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
+      old-signer-activated-at: "2026-08-24T00:00:00Z"
+      old-signer-expires-at: "2026-09-07T00:00:00Z"
       branch: package-update/verified/${{ matrix.channel }}
       lane: ${{ matrix.config.lane }}
       writer: ${{ matrix.config.writer }}
@@ -52,10 +52,10 @@ jobs:
     with:
       consumer-repository: ${{ github.repository }}
       channel: ${{ matrix.channel }}
-      current-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
-      old-signer-digest: ""
-      old-signer-activated-at: ""
-      old-signer-expires-at: ""
+      current-signer-digest: "eeb8a182174f3c97c370ecf3f1e3e4689ae22cfe"
+      old-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
+      old-signer-activated-at: "2026-08-24T00:00:00Z"
+      old-signer-expires-at: "2026-09-07T00:00:00Z"
       branch: package-update/verified/${{ matrix.channel }}
       lane: ${{ matrix.config.lane }}
       writer: ${{ matrix.config.writer }}
@@ -72,10 +72,10 @@ jobs:
     with:
       consumer-repository: ${{ github.repository }}
       channel: ${{ matrix.channel }}
-      current-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
-      old-signer-digest: ""
-      old-signer-activated-at: ""
-      old-signer-expires-at: ""
+      current-signer-digest: "eeb8a182174f3c97c370ecf3f1e3e4689ae22cfe"
+      old-signer-digest: "a1ff41d323ab0d87bcb6407e14aee406b32a6cb0"
+      old-signer-activated-at: "2026-08-24T00:00:00Z"
+      old-signer-expires-at: "2026-09-07T00:00:00Z"
       branch: package-update/verified/${{ matrix.channel }}
       lane: ${{ matrix.config.lane }}
       writer: ${{ matrix.config.writer }}
